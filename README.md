@@ -19,7 +19,7 @@
 ## 安装
 
 ```
-composer require tangwei/apidocs
+composer require hashwallet/apidocs
 ```
 
 ## 使用
