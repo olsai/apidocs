@@ -199,6 +199,7 @@ class SwaggerCommon
             'type'       => 'object',
             'properties' => [],
         ];
+        $required = [];
         $rc = ReflectionManager::reflectClass($className);
         $factory = DocBlockFactory::createInstance();
         $isPhp8 = version_compare(PHP_VERSION, '8.0.0', '>');
@@ -226,7 +227,7 @@ class SwaggerCommon
             }
             $property['description'] = $apiModelProperty->value ?? '';
             if ($apiModelProperty->required !== null) {
-                $property['required'] = $apiModelProperty->required;
+                $required[] = $fieldName;
             }
             if ($apiModelProperty->example !== null) {
                 $property['example'] = $apiModelProperty->example;
@@ -280,6 +281,9 @@ class SwaggerCommon
 
         if (empty($schema['properties'])) {
             $schema['properties'] = new stdClass();
+        }
+        if (!empty($required)) {
+            $schema['required'] = $required;
         }
         SwaggerJson::$swagger['definitions'][$this->getSimpleClassName($className)] = $schema;
     }
