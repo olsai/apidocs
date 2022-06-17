@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hyperf\ApiDocs\Swagger;
 
+use Hyperf\ApiDocs\Annotation\ApiFileProperty;
 use Hyperf\ApiDocs\Annotation\ApiModelProperty;
 use Hyperf\Database\Model\Model;
 use Hyperf\Di\ReflectionManager;
@@ -51,6 +52,12 @@ class SwaggerCommon
             }
             $phpType = $this->getTypeName($reflectionProperty);
             $property['type'] = $this->getType2SwaggerType($phpType);
+
+            // file annotation
+            if (ApiAnnotation::getProperty($parameterClassName, $reflectionProperty->getName(), ApiFileProperty::class)) {
+                $phpType = 'string';
+                $property['type'] = 'file';
+            }
             if (!in_array($phpType, ['integer', 'int', 'boolean', 'bool', 'string', 'double', 'float'])) {
                 continue;
             }
