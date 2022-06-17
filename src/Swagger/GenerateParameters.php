@@ -107,17 +107,18 @@ class GenerateParameters
                 }
                 if ($methodParameter->isRequestFormData()) {
                     $propertyArr = $this->common->getParameterClassProperty($parameterClassName, 'formData');
+                    $isFile = false;
                     foreach ($propertyArr as $property) {
                         $parameters[] = $property;
+                        if ($property['type'] == 'file') {
+                            $isFile = true;
+                        }
                     }
-                    $consumes = 'application/x-www-form-urlencoded';
+                    $consumes = $isFile ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
                 }
             }
         }
-        if ($consumes != null) {
-            SwaggerJson::$swagger['paths'][$this->route][$this->method]['consumes'] = [$consumes];
-        }
-        return array_values($parameters);
+        return [array_values($parameters), $consumes];
     }
 
     private function generateParam($paramArr): array
