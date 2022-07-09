@@ -103,7 +103,7 @@ class SwaggerJson
         $makeResponses = new GenerateResponses($className, $methodName, $apiResponseArr, $this->config->get('api_docs'));
         self::$swagger['paths'][$route]['position'] = $position;
 
-	    [$parameters, $consumes] = $makeParameters->generate();
+        [$parameters, $consumes] = $makeParameters->generate();
         self::$swagger['paths'][$route][$method] = [
             'tags' => $tags,
             'summary' => $apiOperation->summary ?? '',
