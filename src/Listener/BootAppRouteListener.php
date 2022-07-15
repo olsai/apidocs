@@ -23,7 +23,7 @@ class BootAppRouteListener implements ListenerInterface
         ];
     }
 
-    public function process(object $event)
+    public function process(object $event): void
     {
         $container = ApplicationContext::getContainer();
         $logger = $container->get(StdoutLoggerInterface::class);
