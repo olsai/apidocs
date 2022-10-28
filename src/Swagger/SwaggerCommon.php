@@ -58,8 +58,14 @@ class SwaggerCommon
                 $phpType = 'string';
                 $property['type'] = 'file';
             }
-            if (!in_array($phpType, ['integer', 'int', 'boolean', 'bool', 'string', 'double', 'float'])) {
-                continue;
+
+            $phpSupportType = ['integer', 'int', 'boolean', 'bool', 'string', 'double', 'float'];
+            if (!in_array($phpType, $phpSupportType)) {
+                $propertyClass = PropertyManager::getProperty($parameterClassName, $property['name']);
+                if (!in_array($propertyClass->type, $phpSupportType)) {
+                    continue;
+                }
+                $property['type'] = $this->getType2SwaggerType($propertyClass->type);
             }
 
             $apiModelProperty = ApiAnnotation::getProperty($parameterClassName, $reflectionProperty->getName(), ApiModelProperty::class);
