@@ -52,9 +52,9 @@ class GenerateResponses
                     'type'       => 'object',
                     'properties' => [
                         'code' => [
-                            'type'        => 'string',
+                            'type'        => 'integer',
                             'description' => '错误码',
-                            'example'     => "0",
+                            'example'     => 0,
                         ],
                         'msg'  => [
                             'type'        => 'string',
