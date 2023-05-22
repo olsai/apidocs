@@ -201,7 +201,12 @@ class SwaggerCommon
             $this->generateEmptySchema($className);
             return;
         }
-        $obj = ApplicationContext::getContainer()->get($className);
+        try {
+            $obj = ApplicationContext::getContainer()->get($className);
+        }catch (\Throwable $exception) {
+            // exception 兼容
+            return;
+        }
         if ($obj instanceof Model) {
             //$this->getModelSchema($obj);
             $this->generateEmptySchema($className);
