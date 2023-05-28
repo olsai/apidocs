@@ -201,12 +201,9 @@ class SwaggerCommon
             $this->generateEmptySchema($className);
             return;
         }
-        try {
-            $obj = ApplicationContext::getContainer()->get($className);
-        }catch (\Throwable $exception) {
-            // exception 兼容
-            return;
-        }
+
+        $obj = ApplicationContext::getContainer()->get($className);
+
         if ($obj instanceof Model) {
             //$this->getModelSchema($obj);
             $this->generateEmptySchema($className);
@@ -271,8 +268,12 @@ class SwaggerCommon
                         $property['items']['type'] = $this->getType2SwaggerType($propertyClass->className);
                     } else {
                         if (!$isEnum) {
-                            $this->generateClass2schema($propertyClass->className);
-                            $property['items']['$ref'] = $this->getDefinitions($propertyClass->className);
+                            try {
+                                $this->generateClass2schema($propertyClass->className);
+                                $property['items']['$ref'] = $this->getDefinitions($propertyClass->className);
+                            } catch (\Throwable $exception) {
+                                $property['items'] = (object)[];
+                            }
                         }
                     }
                 }
@@ -281,13 +282,17 @@ class SwaggerCommon
                 $property['items'] = (object)[];
             }
             if (!$propertyClass->isSimpleType && $phpType != 'array' && class_exists($propertyClass->className) && !$isEnum) {
-                $this->generateClass2schema($propertyClass->className);
-                if (!empty($property['description'])) {
-                    $definition = $this->getDefinition($propertyClass->className);
-                    $definition['description'] = $property['description'];
-                    SwaggerJson::$swagger['definitions'][$this->getSimpleClassName($propertyClass->className)] = $definition;
+                try {
+                    $this->generateClass2schema($propertyClass->className);
+                    if (!empty($property['description'])) {
+                        $definition = $this->getDefinition($propertyClass->className);
+                        $definition['description'] = $property['description'];
+                        SwaggerJson::$swagger['definitions'][$this->getSimpleClassName($propertyClass->className)] = $definition;
+                    }
+                    $property = ['$ref' => $this->getDefinitions($propertyClass->className)];
+                } catch (\Throwable $exception) {
+
                 }
-                $property = ['$ref' => $this->getDefinitions($propertyClass->className)];
             }
 
             if ($isEnum) {
